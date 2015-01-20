@@ -102,16 +102,16 @@ public class RenderItemTransformer implements IClassTransformer {
              * Notice how similar this is to the angle computation in doRender.
              * However, this time the value is not stored in a field but instead passed to a method.
              * It's slightly harder to identify the section we want to modify here.
-             * We can look for the first "fdiv" instruction in this method. Notice how before that point
+             * We can look for the first "fdiv" instruction in this method. Notice how before that section
              * no floating point divisions are being made in this function.
              * 
-             * This time we want to skip the whole method call, so no rotation is being performed at this point.
+             * This time we want to skip the whole method call, so no rotation is being performed at all.
              * The computation and the method call include the 6 instructions before "fdiv",
-             * "fdiv" itself and the 9 instructions after this. We want to remove all this.
+             * "fdiv" itself and the 9 instructions after this. We want to remove all that.
              * 
              * Notice how right before this section is a "goto" instruction. The "goto" points right after
-             * this section, so if we remove the section the "goto" will become useless.
-             * So we can remove this "goto" as well.
+             * this section and would normally skip it.
+             * If we remove it the "goto" will become useless, so we can go ahead and remove that as well.
              */
             //Searching for "fdiv" instruction
             if(currentNode.getOpcode() == Opcodes.FDIV) {
