@@ -16,6 +16,7 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
 @Name("NoItemRotation")
 @MCVersion("1.7.10")
+@SortingIndex(1001)
 public class NIRLoadingPlugin implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {
