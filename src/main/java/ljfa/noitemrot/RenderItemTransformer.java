@@ -51,13 +51,13 @@ public class RenderItemTransformer implements IClassTransformer {
                             FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"fstore 12\"");
                             
                             //Remove the 12 preceding instructions
-                            for(int i = 0; i < 12; i++) {
+                            for(int i = 0; i < 12; i++)
                                 mn.instructions.remove(node.getPrevious());
-                            }
+                            
                             //Insert a "fconst_0" instruction
                             mn.instructions.insertBefore(node, new InsnNode(Opcodes.FCONST_0));
                             
-                            FMLLog.log("NoItemRotation", Level.INFO, "Patching complete!");
+                            FMLLog.log("NoItemRotation", Level.INFO, "Successfully injected into %s", mn.name);
                             break;
                         }
                     }
@@ -65,7 +65,7 @@ public class RenderItemTransformer implements IClassTransformer {
             } else if(mn.name.equals("renderDroppedItem") && mn.desc.equals("(Lnet/minecraft/entity/item/EntityItem;Lnet/minecraft/util/IIcon;IFFFFI)V")) {
                 FMLLog.log("NoItemRotation", Level.INFO, "Found target method %s", mn.name);
                 
-              //Loop through the instructions of the method
+                //Loop through the instructions of the method
                 Iterator<AbstractInsnNode> it = mn.instructions.iterator();
                 while(it.hasNext()) {
                     AbstractInsnNode currentNode = it.next();
@@ -79,13 +79,13 @@ public class RenderItemTransformer implements IClassTransformer {
                             mn.instructions.remove(node.getPrevious());
                             mn.instructions.remove(node.getPrevious());
                             //Remove the 14 following instructions
-                            for(int i = 0; i < 14; i++) {
+                            for(int i = 0; i < 14; i++)
                                 mn.instructions.remove(node.getNext());
-                            }
+                            
                             //Remove the instruction itself
                             mn.instructions.remove(node);
                             
-                            FMLLog.log("NoItemRotation", Level.INFO, "Patching complete!");
+                            FMLLog.log("NoItemRotation", Level.INFO, "Successfully injected into %s", mn.name);
                             break;
                         }
                     }
