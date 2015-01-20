@@ -39,8 +39,7 @@ public class RenderItemTransformer implements IClassTransformer {
 
         //Loop through the methods until we find our target
         for(MethodNode mn: classNode.methods) {
-            if((mn.name.equals("doRender") || mn.name.equals("func_76986_a"))
-                    && mn.desc.equals("(Lnet/minecraft/entity/item/EntityItem;DDDFF)V")) {
+            if((mn.name.equals("doRender") || mn.name.equals("func_76986_a")) && mn.desc.equals("(Lnet/minecraft/entity/item/EntityItem;DDDFF)V")) {
                 FMLLog.log("NoItemRotation", Level.INFO, "Found target method %s%s", mn.name, mn.desc);
                 patchDoRender(mn);
             }
@@ -61,7 +60,18 @@ public class RenderItemTransformer implements IClassTransformer {
         Iterator<AbstractInsnNode> it = mn.instructions.iterator();
         while(it.hasNext()) {
             AbstractInsnNode currentNode = it.next();
-            //We're searching for a "fstore 12" instruction
+            /* In the RenderItem class, at line 70:
+             * 
+             * Currently, the item's rotation angle is computed and stored in field f3.
+             * The 12 instructions before that are where said angle is computed.
+             * We want to remove this computation and instead just store zero as angle into f3.
+             * 
+             * The way we do this is look for the instruction "fstore 12".
+             * This is the access to the field f3.
+             * We simply discard the 12 preceding instructions as we don't want to compute any angle.
+             * Instead, we just load the constant 0.0f and store that into f3.
+             */
+            //Search for "fstore 12"
             if(currentNode.getOpcode() == Opcodes.FSTORE) {
                 VarInsnNode node = (VarInsnNode)currentNode;
                 if(node.var == 12) {
@@ -87,7 +97,23 @@ public class RenderItemTransformer implements IClassTransformer {
         Iterator<AbstractInsnNode> it = mn.instructions.iterator();
         while(it.hasNext()) {
             AbstractInsnNode currentNode = it.next();
-            //We're searching for a "fdiv" instruction
+            /* In the RenderItem class, at line 286:
+             * 
+             * Notice how similar this is to the angle computation in doRender.
+             * However, this time the value is not stored in a field but instead passed to a method.
+             * It's slightly harder to identify the section we want to modify here.
+             * We can look for the first "fdiv" instruction in this method. Notice how before that point
+             * no floating point divisions are being made in this function.
+             * 
+             * This time we want to skip the whole method call, so no rotation is being performed at this point.
+             * The computation and the method call include the 6 instructions before "fdiv",
+             * "fdiv" itself and the 9 instructions after this. We want to remove all this.
+             * 
+             * Notice how right before this section is a "goto" instruction. The "goto" points right after
+             * this section, so if we remove the section the "goto" will become useless.
+             * So we can remove this "goto" as well.
+             */
+            //Searching for "fdiv" instruction
             if(currentNode.getOpcode() == Opcodes.FDIV) {
                 //Found "fdiv"
                 InsnNode node = (InsnNode)currentNode;
