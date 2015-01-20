@@ -1,0 +1,16 @@
+[
+{
+  "modid": "no_item_rotation",
+  "name": "NoItemRotation",
+  "description": "Makes dropped items not rotate.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["ljfa"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
