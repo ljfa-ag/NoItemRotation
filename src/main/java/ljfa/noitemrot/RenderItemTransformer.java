@@ -23,15 +23,15 @@ public class RenderItemTransformer implements IClassTransformer {
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if(name.equals("net.minecraft.client.renderer.entity.RenderItem")) {
             FMLLog.log("NoItemRotation", Level.INFO, "About to patch class %s", name);
-            return patchClassASM(name, basicClass, false);
+            return patchClassASM(name, basicClass);
         } else if(name.equals("bny")) {
             FMLLog.log("NoItemRotation", Level.INFO, "About to patch obfuscated class %s", name);
-            return patchClassASM(name, basicClass, true);
+            return patchClassASM(name, basicClass);
         } else
             return basicClass;
     }
 
-    public byte[] patchClassASM(String name, byte[] bytes, boolean obfuscated) {      
+    public byte[] patchClassASM(String name, byte[] bytes) {      
         //ASM manipulation stuff
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
@@ -39,8 +39,6 @@ public class RenderItemTransformer implements IClassTransformer {
         
         //Loop through the methods until we find our target
         for(MethodNode mn: classNode.methods) {
-            //FMLLog.log("NoItemRotation", Level.INFO, "Method %s%s", mn.name, mn.desc);
-            
             if((mn.name.equals("doRender") || mn.name.equals("func_76986_a"))
                     && mn.desc.equals("(Lnet/minecraft/entity/item/EntityItem;DDDFF)V")) {
                 FMLLog.log("NoItemRotation", Level.INFO, "Found target method %s%s", mn.name, mn.desc);
