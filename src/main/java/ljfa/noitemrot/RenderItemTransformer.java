@@ -86,10 +86,11 @@ public class RenderItemTransformer implements IClassTransformer {
                     mn.instructions.insertBefore(node, new InsnNode(Opcodes.FCONST_0));
 
                     FMLLog.log("NoItemRotation", Level.INFO, "Successfully injected into %s%s", mn.name, mn.desc);
-                    break;
+                    return;
                 }
             }
         }
+        FMLLog.log("NoItemRotation", Level.ERROR, "Failed injection into %s%s", mn.name, mn.desc);
     }
     
     private void patchRenderDroppedItem(MethodNode mn) {
@@ -129,8 +130,9 @@ public class RenderItemTransformer implements IClassTransformer {
                 mn.instructions.remove(node);
 
                 FMLLog.log("NoItemRotation", Level.INFO, "Successfully injected into %s%s", mn.name, mn.desc);
-                break;
+                return;
             }
         }
+        FMLLog.log("NoItemRotation", Level.ERROR, "Failed injection into %s%s", mn.name, mn.desc);
     }
 }
