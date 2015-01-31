@@ -16,7 +16,7 @@ public class NIRModContainer extends DummyModContainer {
         ModMetadata meta = getMetadata();
         meta.modId = "no_item_rotation";
         meta.name = "NoItemRotation";
-        meta.version = "0.1-alpha";
+        meta.version = "1.0-beta";
         meta.authorList = Arrays.asList("ljfa");
     }
 
