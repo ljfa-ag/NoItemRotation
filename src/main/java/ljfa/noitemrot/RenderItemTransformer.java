@@ -58,6 +58,7 @@ public class RenderItemTransformer implements IClassTransformer {
     private void patchDoRender(MethodNode mn) {
         //Loop through the instructions of the method
         Iterator<AbstractInsnNode> it = mn.instructions.iterator();
+        boolean didInject = false;
         while(it.hasNext()) {
             AbstractInsnNode currentNode = it.next();
             /* In the RenderItem class, at line 70:
@@ -85,17 +86,21 @@ public class RenderItemTransformer implements IClassTransformer {
                     //Insert a "fconst_0" instruction
                     mn.instructions.insertBefore(node, new InsnNode(Opcodes.FCONST_0));
 
-                    FMLLog.log("NoItemRotation", Level.INFO, "Successfully injected into %s%s", mn.name, mn.desc);
-                    return;
+                    didInject = true;
+                    break;
                 }
             }
         }
-        FMLLog.log("NoItemRotation", Level.ERROR, "Failed injection into %s%s", mn.name, mn.desc);
+        if(didInject)
+            FMLLog.log("NoItemRotation", Level.INFO, "Successfully injected into %s%s", mn.name, mn.desc);
+        else
+            FMLLog.log("NoItemRotation", Level.ERROR, "Failed injection into %s%s", mn.name, mn.desc);
     }
     
     private void patchRenderDroppedItem(MethodNode mn) {
         //Loop through the instructions of the method
         Iterator<AbstractInsnNode> it = mn.instructions.iterator();
+        boolean didInject = false;
         while(it.hasNext()) {
             AbstractInsnNode currentNode = it.next();
             /* In the RenderItem class, at line 286:
@@ -129,10 +134,13 @@ public class RenderItemTransformer implements IClassTransformer {
                 //Remove the instruction itself
                 mn.instructions.remove(node);
 
-                FMLLog.log("NoItemRotation", Level.INFO, "Successfully injected into %s%s", mn.name, mn.desc);
-                return;
+                didInject = true;
+                break;
             }
         }
-        FMLLog.log("NoItemRotation", Level.ERROR, "Failed injection into %s%s", mn.name, mn.desc);
+        if(didInject)
+            FMLLog.log("NoItemRotation", Level.INFO, "Successfully injected into %s%s", mn.name, mn.desc);
+        else
+            FMLLog.log("NoItemRotation", Level.ERROR, "Failed injection into %s%s", mn.name, mn.desc);
     }
 }
