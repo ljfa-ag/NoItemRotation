@@ -113,11 +113,11 @@ public class RenderItemTransformer implements IClassTransformer {
              * this section and would normally skip it.
              * If we remove it the "goto" will become useless, so we can go ahead and remove that as well.
              */
-            //Searching for "fdiv" instruction
-            if(currentNode.getOpcode() == Opcodes.FDIV) {
-                //Found "fdiv"
+            //Searching for "fdiv" instruction, followed by "aload_1"
+            if(currentNode.getOpcode() == Opcodes.FDIV && currentNode.getNext().getOpcode() == Opcodes.ALOAD) {
+                //Found "fdiv" followed by "aload_1"
                 InsnNode node = (InsnNode)currentNode;
-                FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"fdiv\"");
+                FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"fdiv\" followed by \"aload_1\"");
                 //Remove the 7 preceding instructions
                 for(int i = 0; i < 7; i++)
                     mn.instructions.remove(node.getPrevious());
