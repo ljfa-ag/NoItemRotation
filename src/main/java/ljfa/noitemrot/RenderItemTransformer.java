@@ -74,9 +74,9 @@ public class RenderItemTransformer implements IClassTransformer {
             //Search for "fstore 12"
             if(currentNode.getOpcode() == Opcodes.FSTORE) {
                 VarInsnNode node = (VarInsnNode)currentNode;
-                //Check if the argument is 12 and the following instruction is "iconst_1"
-                if(node.var == 12 && currentNode.getNext().getOpcode() == Opcodes.ICONST_1) {
-                    FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"fstore 12\" followed by \"iconst_1\"");
+                //Check if the argument is 12 and the preceding instruction is "fmul"
+                if(node.var == 12 && currentNode.getPrevious().getOpcode() == Opcodes.FMUL) {
+                    FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"fstore 12\" preceded by \"fmul\"");
 
                     //Remove the 12 preceding instructions
                     for(int i = 0; i < 12; i++)
