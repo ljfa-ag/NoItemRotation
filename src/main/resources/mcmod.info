@@ -5,7 +5,7 @@
   "description": "Makes dropped items not rotate.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "http://minecraft.curseforge.com/mc-mods/227185-noitemrotation",
   "updateUrl": "",
   "authorList": ["ljfa"],
   "credits": "",
