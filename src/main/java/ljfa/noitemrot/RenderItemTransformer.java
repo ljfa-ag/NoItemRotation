@@ -10,8 +10,9 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
@@ -74,20 +75,32 @@ public class RenderItemTransformer implements IClassTransformer {
              */
             //Search for "fstore 12"
             if(currentNode.getOpcode() == Opcodes.FSTORE) {
-                VarInsnNode node = (VarInsnNode)currentNode;
                 //Check if the argument is 12 and the preceding instruction is "fmul"
-                if(node.var == 12 && currentNode.getPrevious().getOpcode() == Opcodes.FMUL) {
+                if(((VarInsnNode)currentNode).var == 12 && currentNode.getPrevious().getOpcode() == Opcodes.FMUL) {
                     FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"fstore 12\" preceded by \"fmul\"");
 
-                    //Remove the 12 preceding instructions
+                    //Go 12 steps back
+                    AbstractInsnNode skipNode = currentNode;
                     for(int i = 0; i < 12; i++)
-                        mn.instructions.remove(node.getPrevious());
-
-                    //Insert a "fconst_0" instruction
-                    mn.instructions.insertBefore(node, new InsnNode(Opcodes.FCONST_0));
-
-                    didInject = true;
-                    break;
+                        skipNode = skipNode.getPrevious();
+                    
+                    //Check if it's "aload_1"
+                    if(skipNode.getOpcode() == Opcodes.ALOAD && ((VarInsnNode)skipNode).var == 1) {
+                        FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"aload 1\"");
+                        
+                        //Insert an "fconst_0" instruction at the end of the skip
+                        mn.instructions.insertBefore(currentNode, new InsnNode(Opcodes.FCONST_0));
+                        //Insert a label before that
+                        currentNode = currentNode.getPrevious();
+                        LabelNode label = new LabelNode();
+                        mn.instructions.insertBefore(currentNode, label);
+                        
+                        //Insert a "goto" instruction at the start of the skip
+                        mn.instructions.insertBefore(skipNode, new JumpInsnNode(Opcodes.GOTO, label));
+                        
+                        didInject = true;
+                        break;
+                    }
                 }
             }
         }
