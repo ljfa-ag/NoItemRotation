@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.0-beta"
+version = "1.1-beta"
 group= "ljfa.noitemrot" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "no_item_rotation"
 
