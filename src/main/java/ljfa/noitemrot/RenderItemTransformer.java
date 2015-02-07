@@ -40,11 +40,13 @@ public class RenderItemTransformer implements IClassTransformer {
 
         //Loop through the methods until we find our target
         for(MethodNode mn: classNode.methods) {
-            if(mn.name.equals(obfuscated ? "func_76986_a" : "doRender") && mn.desc.equals("(Lnet/minecraft/entity/item/EntityItem;DDDFF)V")) {
+            if(Config.disableRotation && mn.name.equals(obfuscated ? "func_76986_a" : "doRender")
+                    && mn.desc.equals("(Lnet/minecraft/entity/item/EntityItem;DDDFF)V")) {
                 FMLLog.log("NoItemRotation", Level.INFO, "Found target method %s%s", mn.name, mn.desc);
                 patchDoRender(mn);
             }
-            else if(mn.name.equals("renderDroppedItem") && mn.desc.equals("(Lnet/minecraft/entity/item/EntityItem;Lnet/minecraft/util/IIcon;IFFFFI)V")) {
+            else if(Config.disableRotation && mn.name.equals("renderDroppedItem")
+                    && mn.desc.equals("(Lnet/minecraft/entity/item/EntityItem;Lnet/minecraft/util/IIcon;IFFFFI)V")) {
                 FMLLog.log("NoItemRotation", Level.INFO, "Found target method %s%s", mn.name, mn.desc);
                 patchRenderDroppedItem(mn);
             }
