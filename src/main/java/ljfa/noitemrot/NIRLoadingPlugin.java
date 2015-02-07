@@ -30,7 +30,7 @@ public class NIRLoadingPlugin implements IFMLLoadingPlugin {
 
     @Override
     public String getSetupClass() {
-        return null;
+        return "ljfa.noitemrot.NIRSetup";
     }
 
     @Override

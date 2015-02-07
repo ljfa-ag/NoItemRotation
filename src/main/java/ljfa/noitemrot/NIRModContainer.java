@@ -3,12 +3,10 @@ package ljfa.noitemrot;
 import java.util.Arrays;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 import cpw.mods.fml.common.DummyModContainer;
 import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.common.event.FMLConstructionEvent;
 
 public class NIRModContainer extends DummyModContainer {
     public NIRModContainer() {
