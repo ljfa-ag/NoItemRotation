@@ -12,7 +12,7 @@ public class NIRSetup implements IFMLCallHook {
     @Override
     public Void call() throws Exception {
         FMLLog.log("NoItemRotation", Level.INFO, "Loading configuration");
-        Config.loadConfig(new File("config/no_item_rotation_core.cfg"));
+        Config.loadConfig(new File("config/no_item_rotation.cfg"));
         return null;
     }
 
