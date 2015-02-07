@@ -66,12 +66,13 @@ public class RenderItemTransformer implements IClassTransformer {
              * 
              * Currently, the item's rotation angle is computed and stored in field f3.
              * The 12 instructions before that are where said angle is computed.
-             * We want to remove this computation and instead just store zero as angle into f3.
+             * We want to skip this computation and instead just store zero as angle into f3.
              * 
              * The way we do this is look for the instruction "fstore 12".
-             * This is the access to the field f3.
-             * We simply discard the 12 preceding instructions as we don't want to compute any angle.
-             * Instead, we just load the constant 0.0f and store that into f3.
+             * This is the access to the field f3. 
+             * Then we go 12 steps back and insert a "goto" instruction there, skipping the entire
+             * computation.
+             * At the end of the skip we insert a "fconst_0" instruction.
              */
             //Search for "fstore 12"
             if(currentNode.getOpcode() == Opcodes.FSTORE) {
