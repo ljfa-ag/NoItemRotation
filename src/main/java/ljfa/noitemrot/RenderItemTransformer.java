@@ -48,6 +48,9 @@ public class RenderItemTransformer implements IClassTransformer {
                 FMLLog.log("NoItemRotation", Level.INFO, "Found target method %s%s", mn.name, mn.desc);
                 patchRenderDroppedItem(mn);
             }
+            else if(Config.disableBobbing && mn.name.equals("shouldBob")) {
+                FMLLog.log("NoItemRotation", Level.INFO, "Found target method %s%s", mn.name, mn.desc);
+            }
         }
 
         //Write class
@@ -147,6 +150,30 @@ public class RenderItemTransformer implements IClassTransformer {
                     didInject = true;
                     break;
                 }
+            }
+        }
+        if(didInject)
+            FMLLog.log("NoItemRotation", Level.INFO, "Successfully injected into %s%s", mn.name, mn.desc);
+        else
+            FMLLog.log("NoItemRotation", Level.ERROR, "Failed injection into %s%s", mn.name, mn.desc);
+    }
+    
+    private void patchShouldBob(MethodNode mn) {
+        //Loop through the instructions of the method
+        Iterator<AbstractInsnNode> it = mn.instructions.iterator();
+        boolean didInject = false;
+        while(it.hasNext()) {
+            AbstractInsnNode currentNode = it.next();
+            /* In the RenderItem class, line 803:
+             * 
+             * We just need to change "iconst_1" to "iconst_0".
+             */
+            if(currentNode.getOpcode() == Opcodes.ICONST_1) {
+                FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"iconst_1\"");
+                //Replace with "iconst_0"
+                mn.instructions.set(currentNode, new InsnNode(Opcodes.ICONST_0));
+                didInject = true;
+                break;
             }
         }
         if(didInject)
