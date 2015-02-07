@@ -32,7 +32,7 @@ public class RenderItemTransformer implements IClassTransformer {
             return basicClass;
     }
 
-    public byte[] patchClassASM(String name, byte[] bytes, boolean obfuscated) {      
+    private byte[] patchClassASM(String name, byte[] bytes, boolean obfuscated) {      
         //ASM manipulation stuff
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
