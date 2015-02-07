@@ -48,8 +48,9 @@ public class RenderItemTransformer implements IClassTransformer {
                 FMLLog.log("NoItemRotation", Level.INFO, "Found target method %s%s", mn.name, mn.desc);
                 patchRenderDroppedItem(mn);
             }
-            else if(Config.disableBobbing && mn.name.equals("shouldBob")) {
+            else if(Config.disableBobbing && mn.name.equals("shouldBob") && mn.desc.equals("()Z")) {
                 FMLLog.log("NoItemRotation", Level.INFO, "Found target method %s%s", mn.name, mn.desc);
+                patchShouldBob(mn);
             }
         }
 
