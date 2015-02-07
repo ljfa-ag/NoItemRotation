@@ -117,39 +117,36 @@ public class RenderItemTransformer implements IClassTransformer {
         boolean didInject = false;
         while(it.hasNext()) {
             AbstractInsnNode currentNode = it.next();
-            /* In the RenderItem class, at line 286:
+            /* In the RenderItem class, at line 280:
              * 
-             * Notice how similar this is to the angle computation in doRender.
-             * However, this time the value is not stored in a field but instead passed to a method.
-             * It's slightly harder to identify the section we want to modify here.
-             * We can look for the first "fdiv" instruction in this method. Notice how before that section
-             * no floating point divisions are being made in this function.
+             * We want to disable the "else" branch of this branching.
              * 
-             * This time we want to skip the whole method call, so no rotation is being performed at all.
-             * The computation and the method call include the 6 instructions before "fdiv",
-             * "fdiv" itself and the 9 instructions after this. We want to remove all that.
-             * 
-             * Notice how right before this section is a "goto" instruction. The "goto" points right after
-             * this section and would normally skip it.
-             * If we remove it the "goto" will become useless, so we can go ahead and remove that as well.
+             * We search for an "ifeq" instruction preceded by "getstatic".
+             * 8 steps (including frame and line number nodes) after that
+             * should be a "goto" instruction. This instruction jumps after the end of
+             * the whole branching. We want to get the target of this "goto" and put it
+             * into the "ifeq" instruction, so that when the "if"-test fails, it doesn't go
+             * to the "else"-branch but instead right to the end.
              */
-            //Searching for "fdiv" instruction, followed by "aload_1"
-            if(currentNode.getOpcode() == Opcodes.FDIV && currentNode.getNext().getOpcode() == Opcodes.ALOAD) {
-                //Found "fdiv" followed by "aload_1"
-                InsnNode node = (InsnNode)currentNode;
-                FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"fdiv\" followed by \"aload_1\"");
-                //Remove the 7 preceding instructions
-                for(int i = 0; i < 7; i++)
-                    mn.instructions.remove(node.getPrevious());
-                //Remove the 9 following instructions
-                for(int i = 0; i < 9; i++)
-                    mn.instructions.remove(node.getNext());
-
-                //Remove the instruction itself
-                mn.instructions.remove(node);
-
-                didInject = true;
-                break;
+            //Searching for "ifeq" instruction, preceded by "getstatic"
+            if(currentNode.getOpcode() == Opcodes.IFEQ && currentNode.getPrevious().getOpcode() == Opcodes.GETSTATIC) {
+                JumpInsnNode ifeqNode = (JumpInsnNode)currentNode;
+                FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"ifeq\" preceded by \"getstatic\"");
+                
+                //Go 8 steps forward
+                AbstractInsnNode gotoNode = ifeqNode;
+                for(int i = 0; i < 8; i++)
+                    gotoNode = gotoNode.getNext();
+                
+                //Check if it's "goto"
+                if(gotoNode.getOpcode() == Opcodes.GOTO) {
+                    FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"goto\"");
+                    //Put the "goto" target into the "ifeq" instruction
+                    ifeqNode.label = ((JumpInsnNode)gotoNode).label;
+                    
+                    didInject = true;
+                    break;
+                }
             }
         }
         if(didInject)
