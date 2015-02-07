@@ -80,12 +80,13 @@ public class RenderItemTransformer implements IClassTransformer {
              */
             //Search for "fstore 12"
             if(currentNode.getOpcode() == Opcodes.FSTORE) {
+                VarInsnNode storeNode = (VarInsnNode)currentNode;
                 //Check if the argument is 12 and the preceding instruction is "fmul"
-                if(((VarInsnNode)currentNode).var == 12 && currentNode.getPrevious().getOpcode() == Opcodes.FMUL) {
+                if(storeNode.var == 12 && storeNode.getPrevious().getOpcode() == Opcodes.FMUL) {
                     FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"fstore 12\" preceded by \"fmul\"");
-
+                    
                     //Go 12 steps back
-                    AbstractInsnNode skipNode = currentNode;
+                    AbstractInsnNode skipNode = storeNode;
                     for(int i = 0; i < 12; i++)
                         skipNode = skipNode.getPrevious();
                     
@@ -94,11 +95,10 @@ public class RenderItemTransformer implements IClassTransformer {
                         FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"aload 1\"");
                         
                         //Insert an "fconst_0" instruction at the end of the skip
-                        mn.instructions.insertBefore(currentNode, new InsnNode(Opcodes.FCONST_0));
+                        mn.instructions.insertBefore(storeNode, new InsnNode(Opcodes.FCONST_0));
                         //Insert a label before that
-                        currentNode = currentNode.getPrevious();
                         LabelNode label = new LabelNode();
-                        mn.instructions.insertBefore(currentNode, label);
+                        mn.instructions.insertBefore(storeNode.getPrevious(), label);
                         
                         //Insert a "goto" instruction at the start of the skip
                         mn.instructions.insertBefore(skipNode, new JumpInsnNode(Opcodes.GOTO, label));
