@@ -171,8 +171,8 @@ public class RenderItemTransformer implements IClassTransformer {
              * 
              * We just need to change "iconst_1" to "iconst_0".
              */
-            if(currentNode.getOpcode() == Opcodes.ICONST_1) {
-                FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"iconst_1\"");
+            if(currentNode.getOpcode() == Opcodes.ICONST_1 && currentNode.getNext().getOpcode() == Opcodes.IRETURN) {
+                FMLLog.log("NoItemRotation", Level.INFO, "Found target instruction \"iconst_1\" followed by \"ireturn\"");
                 //Replace with "iconst_0"
                 mn.instructions.set(currentNode, new InsnNode(Opcodes.ICONST_0));
                 didInject = true;
