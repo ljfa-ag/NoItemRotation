@@ -14,7 +14,7 @@ public class NIRModContainer extends DummyModContainer {
         ModMetadata meta = getMetadata();
         meta.modId = "no_item_rotation";
         meta.name = "NoItemRotation";
-        meta.version = "1.1-beta";
+        meta.version = "@VERSION@";
         meta.authorList.add("ljfa");
         meta.url = "http://minecraft.curseforge.com/mc-mods/227185-noitemrotation";
     }
